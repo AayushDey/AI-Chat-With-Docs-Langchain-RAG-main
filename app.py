@@ -27,6 +27,8 @@ async def handle_query(request: QueryRequest):
         response_text = query_rag(request.query)
         return {"answer": response_text}
     except Exception as e:
+        import traceback
+        print(f"Error occurred: {traceback.format_exc()}")
         return {"error": str(e)}
 
 if __name__ == "__main__":

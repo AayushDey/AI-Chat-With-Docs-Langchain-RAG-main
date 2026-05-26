@@ -19,26 +19,39 @@ Answer the question based on the above context: {question}
 """
 
 def query_rag(query_text: str) -> str:
-    load_dotenv()
-    # Prepare DB.
-    embedding_function = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
+    try:
+        load_dotenv()
+        # Prepare DB.
+        embedding_function = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
 
-    # Search DB.
-    results = db.similarity_search_with_score(query_text, k=5)
-    context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
+        # Search DB.
+        results = db.similarity_search_with_score(query_text, k=5)
+        if not results:
+            return "No documents found in the database."
+        
+        context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
 
-    prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-    prompt = prompt_template.format(context=context_text, question=query_text)
+        prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
+        prompt = prompt_template.format(context=context_text, question=query_text)
 
-    # Groq API model
-    llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
-        api_key=os.getenv("GROQ_API_KEY"),
-    )
+        # Groq API model
+        llm = ChatGroq(
+            model="llama-3.3-70b-versatile",
+            api_key=os.getenv("GROQ_API_KEY"),
+        )
 
-    response = llm.invoke(prompt)
-    return response.content
+        response = llm.invoke(prompt)
+        # Ensure we return a string
+        if hasattr(response, 'content'):
+            return str(response.content)
+        else:
+            return str(response)
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"Error in query_rag: {error_details}")
+        raise
 
 def main():
     # Load environment variables
