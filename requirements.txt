@@ -1,4 +1,3 @@
-streamlit
 fastapi
 uvicorn
 
@@ -6,15 +5,11 @@ python-dotenv
 
 langchain
 langchain-community
-langchain-openai
 langchain-huggingface
 langchain-groq
 
 chromadb
 
 sentence-transformers
-huggingface-hub
-
-unstructured
 
 pypdf
