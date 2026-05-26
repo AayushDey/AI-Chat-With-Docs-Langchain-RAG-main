@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
 
@@ -9,6 +10,15 @@ import os
 from query_data import query_rag
 
 app = FastAPI(title="RAG Chat API")
+
+# Add CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Mount the static directory for CSS, JS, and Images
 app.mount("/static", StaticFiles(directory="static"), name="static")

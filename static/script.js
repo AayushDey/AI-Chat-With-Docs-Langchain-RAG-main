@@ -67,7 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // 3. Make API call
-            const response = await fetch('/api/query', {
+            const apiHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                ? '' 
+                : 'https://ai-chat-with-docs-langchain-rag-main.onrender.com';
+            
+            const response = await fetch(`${apiHost}/api/query`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
